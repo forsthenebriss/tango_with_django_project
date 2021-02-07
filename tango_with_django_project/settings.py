@@ -14,6 +14,12 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+#creates a template path by combinig the BASE_DIR and the 'templates' folder located in the project
+TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
+#creates a static files path by combinig the BASE_DIR and the 'static' folder located in the project
+STATIC_DIR = os.path.join(BASE_DIR, 'static')
+#creates a media files path by combinig the BASE_DIR and the 'media' folder located in the project
+MEDIA_DIR = os.path.join(BASE_DIR, 'media')
 
 
 # Quick-start development settings - unsuitable for production
@@ -55,7 +61,7 @@ ROOT_URLCONF = 'tango_with_django_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [TEMPLATE_DIR,],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -63,6 +69,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media',
             ],
         },
     },
@@ -117,5 +124,10 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
-
 STATIC_URL = '/static/'
+#sets the location of the static files using the path specified by STATIC_DIR
+STATICFILES_DIRS = [STATIC_DIR, ]
+
+#specifies path for media files
+MEDIA_ROOT = MEDIA_DIR
+MEDIA_URL = '/media/'
