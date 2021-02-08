@@ -5,7 +5,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE',
 import django
 django.setup()
 from rango.models import Category, Page
-
+import random
 def populate():
 
     #creating lists of dictionaries with the data we want to add to each category
@@ -52,7 +52,7 @@ def populate():
 def add_page(cat, title, url, views=0):
     p = Page.objects.get_or_create(category=cat, title=title)[0]
     p.url=url
-    p.views= views
+    p.views= random.randrange(1000)
     p.save()
     return p
 

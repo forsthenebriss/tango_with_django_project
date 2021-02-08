@@ -1,4 +1,5 @@
 from django.db import models
+from django.template.defaultfilters import slugify
 
 class Category(models.Model):
     #a name string of maximum 128 chars that must not already exist
@@ -6,7 +7,14 @@ class Category(models.Model):
     #number of likes and views
     likes = models.IntegerField(default=0)
     views = models.IntegerField(default=0)
-    
+    #allows hyphens instead of spaces
+    slug = models.SlugField(unique=True)
+    #each time category is updated, the slug is updated as well
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super(Category, self).save(*args, **kwargs)
+        
+        
    #return name as string for easier manipulation
     def __str__(self):
         return self.name
