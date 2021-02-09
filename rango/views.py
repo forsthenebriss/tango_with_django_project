@@ -1,8 +1,51 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 #importing category model
 from rango.models import Category, Page
+from rango.forms import CategoryForm, PageForm
+from django.urls import reverse
 
+def add_page(request, category_name_slug):
+    try:
+        category = Category.objects.get(slug=category_name_slug)
+    except Category.DoesNotExist:
+        category = None
+    #page needs to have a category
+    if category is None:
+        return redirect('/rango/')
+        
+    form = PageForm()
+    if request.method == 'POST':
+        form = PageForm(request.POST)
+        if form.is_valid():
+            if category:
+                page = form.save(commit=False)
+            page.category = category
+            page.views = 0
+            page.save()
+            return redirect(reverse('rango:show_category',
+                            kwargs={'category_name_slug':
+                                    category_name_slug}))
+        else:
+            print(form.errors)
+    context_dict = {'form': form, 'category': category}
+    return render(request, 'rango/add_page.html', context=context_dict)
+
+def add_category(request):
+    form = CategoryForm()
+    #http post
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+        #it the form is valid
+        if form.is_valid():
+        #save category and return user back to the default index view
+            form.save(commit=True)
+            return redirect('/rango/')
+        else:
+            #print errors that occured
+            print(form.errors)
+    #render the form
+    return render(request, 'rango/add_category.html', {'form': form})
 
 def show_category(request, category_name_slug):
     #creates a dict that can later be used to pass on stuff
@@ -20,7 +63,6 @@ def show_category(request, category_name_slug):
         context_dict['pages'] = None
     #renders a response for the client with the dict required    
     return render(request, 'rango/category.html', context=context_dict)
-
 
 #creates a view about
 def about(request):
