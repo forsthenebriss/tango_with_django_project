@@ -5,6 +5,30 @@ from rango.forms import CategoryForm, PageForm, UserForm, UserProfileForm
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from datetime import datetime
+
+#helper function for cookie testing
+def get_server_side_cookie(request, cookie, default_val=None):
+    val = request.session.get(cookie)
+    if not val:
+        val = default_val
+    return val
+    
+def visitor_cookie_handler(request):
+    visits = int(get_server_side_cookie(request, 'visits', '1'))
+    last_visit_cookie = get_server_side_cookie(request, 'last_visit', str(datetime.now()))
+    last_visit_time = datetime.strptime(last_visit_cookie[:-7],
+    '%Y-%m-%d %H:%M:%S')
+    #if more than 1 day
+    if (datetime.now() - last_visit_time).days > 0:
+        visits = visits + 1
+            #update last visit
+        request.session['last_visit'] = str(datetime.now())   
+    else:    
+        #set last visit
+        request.session['last_visit'] = last_visit_cookie
+    # Update/set the visits cookie
+    request.session['visits'] = visits
 
 #log out 
 @login_required
@@ -142,11 +166,17 @@ def show_category(request, category_name_slug):
 
 #creates a view about
 def about(request):
-    context_dict = {'boldmessage': 'This tutorial has been put together by Romana Canigova'}
+    context_dict = {}
+    visitor_cookie_handler(request)
+    context_dict['visits'] = request.session['visits']
+    context_dict['boldmessage'] = 'This tutorial has been put together by Romana Canigova'
     #renders a response for the client with the dict required
     return render(request, 'rango/about.html', context=context_dict)
+
 #creates a view index
 def index(request):
+    #cookie function
+    visitor_cookie_handler(request)
     #takes the 5 most liked categories as a list
     context_dict = {}
     #a dictionary to match the variables in templates
