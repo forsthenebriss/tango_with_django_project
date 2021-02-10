@@ -1,5 +1,17 @@
 from django.db import models
 from django.template.defaultfilters import slugify
+from django.contrib.auth.models import User
+
+class UserProfile(models.Model):
+    #creates user and links him to user model
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    #additional requirements
+    website = models.URLField(blank=True)
+    picture = models.ImageField(upload_to='profile_images', blank=True)
+
+    #string for better handling
+    def __str__(self):
+        return self.user.username
 
 class Category(models.Model):
     #a name string of maximum 128 chars that must not already exist
