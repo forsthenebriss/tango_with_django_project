@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rango',
+    'registration',
 ]
 
 MIDDLEWARE = [
@@ -138,4 +139,12 @@ PASSWORD_HASHERS = (
     'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
 )
 #redirects non-logged in user to the login page
-LOGIN_URL = 'rango:login'
+LOGIN_URL = 'auth_login'
+
+#allows users to register
+REGISTRATION_OPEN = True
+
+#log in after reg
+REGISTRATION_AUTO_LOGIN = True
+#redirects after login
+LOGIN_REDIRECT_URL = 'rango:index'
